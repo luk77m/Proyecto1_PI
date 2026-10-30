@@ -1,0 +1,6 @@
+opentofu/.terraform/
+opentofu/terraform.tfstate*
+opentofu/.terraform.lock.hcl
+ansible/hosts
+*.qcow2
+*.iso
