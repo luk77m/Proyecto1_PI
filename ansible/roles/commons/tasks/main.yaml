@@ -1,0 +1,18 @@
+- name: Esperar a que la máquina acepte SSH
+  ansible.builtin.wait_for_connection:
+    timeout: 300
+
+- name: Esperar a que termine cloud-init
+  ansible.builtin.command: cloud-init status --wait
+  changed_when: false
+
+- name: Actualizar la caché y el sistema
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    upgrade: dist
+
+- name: Instalar paquetes comunes
+  ansible.builtin.apt:
+    name: "{{ paquetes_comunes }}"
+    state: present
