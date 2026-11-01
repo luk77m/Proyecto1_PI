@@ -33,4 +33,27 @@
     state: present
     column_case_sensitive: true
     login_unix_socket: /run/mysqld/mysqld.sock
-    
+
+- name: Descargar schema.sql de la aplicación
+  ansible.builtin.get_url:
+    url: "{{ app_raw_url }}/schema.sql"
+    dest: /root/schema.sql
+    mode: "0600"
+
+- name: Comprobar si la base de datos ya tiene tablas
+  community.mysql.mysql_query:
+    login_db: "{{ db_name }}"
+    query: "SELECT COUNT(*) AS n FROM information_schema.tables WHERE table_schema = %s"
+    positional_args:
+      - "{{ db_name }}"
+    login_unix_socket: /run/mysqld/mysqld.sock
+  register: tablas
+  changed_when: false
+
+- name: Crear las tablas (solo si la base de datos está vacía)
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    state: import
+    target: /root/schema.sql
+    login_unix_socket: /run/mysqld/mysqld.sock
+  when: tablas.query_result[0][0].n | int == 0
