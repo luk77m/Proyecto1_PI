@@ -31,4 +31,6 @@
     host: "{{ ip_web_datos }}"
     priv: "{{ db_name }}.*:ALL"
     state: present
+    column_case_sensitive: true
     login_unix_socket: /run/mysqld/mysqld.sock
+    
