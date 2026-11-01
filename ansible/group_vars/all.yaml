@@ -1,0 +1,16 @@
+# IP de la red de datos: vienen del inventario que genera OpenTofu
+ip_web_datos: "{{ hostvars[groups['servidores_web'][0]]['ip_datos'] }}"
+ip_bd_datos: "{{ hostvars[groups['servidores_bd'][0]]['ip_datos'] }}"
+
+paquetes_comunes:
+  - vim
+  - curl
+  - htop
+
+db_name: guestbook
+db_user: guestbook
+db_password: "CambiaEsto_123"
+
+app_repo: josedom24/guestbook_php
+app_branch: main
+app_raw_url: "https://raw.githubusercontent.com/{{ app_repo }}/{{ app_branch }}"
