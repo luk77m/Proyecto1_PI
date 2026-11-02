@@ -22,3 +22,34 @@
     owner: root
     group: www-data
     mode: "0640"
+
+- name: Configurar el virtual host
+  ansible.builtin.template:
+    src: vhost.conf.j2
+    dest: /etc/apache2/sites-available/guestbook.conf
+    mode: "0644"
+  notify: Recargar Apache
+
+- name: Habilitar el virtual host
+  ansible.builtin.command: a2ensite guestbook.conf
+  args:
+    creates: /etc/apache2/sites-enabled/guestbook.conf
+  notify: Recargar Apache
+
+- name: Deshabilitar el sitio por defecto
+  ansible.builtin.command: a2dissite 000-default.conf
+  args:
+    removes: /etc/apache2/sites-enabled/000-default.conf
+  notify: Recargar Apache
+
+- name: Apache arrancado y habilitado
+  ansible.builtin.service:
+    name: apache2
+    state: started
+    enabled: true
+
+- name: Habilitar mod_rewrite (lo usa el .htaccess de la aplicación)
+  community.general.apache2_module:
+    name: rewrite
+    state: present
+  notify: Recargar Apache
