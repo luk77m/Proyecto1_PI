@@ -5,8 +5,10 @@
       - libapache2-mod-php
       - php
       - php-mysql
+      - php-mbstring
       - mariadb-client
     state: present
+  notify: Recargar Apache
 
 - name: Descargar y descomprimir la aplicación
   ansible.builtin.unarchive:
