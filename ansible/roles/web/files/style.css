@@ -1,0 +1,225 @@
+/* Diseño personalizado: amarillo y negro con Manrope (desplegado por Ansible) */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --yellow: #ffd60a;
+  --yellow-hover: #ffe347;
+  --black: #0a0a0a;
+  --panel: #151515;
+  --line: #2a2a2a;
+  --text: #f5f5f5;
+  --muted: #a3a3a3;
+  --danger: #ff5c5c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Manrope', system-ui, sans-serif;
+  background: var(--black);
+  color: var(--text);
+  margin: 0;
+  line-height: 1.6;
+  font-size: 17px;
+}
+
+.page {
+  max-width: 860px;
+  margin: 48px auto;
+  padding: 0 20px;
+}
+
+/* Cabecera: bloque amarillo */
+.site-header {
+  background: var(--yellow);
+  color: var(--black);
+  padding: 36px 32px 28px;
+  margin-bottom: 36px;
+}
+
+.site-header h1 {
+  margin: 0 0 12px;
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.site-header nav {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.85rem;
+}
+
+.site-header nav a {
+  color: var(--black);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-right: 6px;
+  transition: border-color .15s;
+}
+
+.site-header nav a:hover {
+  border-bottom-color: var(--black);
+}
+
+/* Tarjetas */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--yellow);
+  padding: 32px;
+  margin: 20px 0;
+}
+
+/* Formulario */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.form-row label {
+  display: block;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.8rem;
+  color: var(--yellow);
+  margin-bottom: 8px;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: inherit;
+  font-size: 1rem;
+  background: var(--black);
+  color: var(--text);
+  border: 2px solid var(--line);
+  border-radius: 0;
+  outline: none;
+  resize: vertical;
+  transition: border-color .15s;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  border-color: var(--yellow);
+}
+
+/* Botón */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn {
+  background: var(--yellow);
+  color: var(--black);
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 14px 28px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+
+.btn:hover {
+  background: var(--yellow-hover);
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Mensajes */
+.messages {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.message {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--yellow);
+  padding: 20px 22px;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.author {
+  font-weight: 800;
+  color: var(--yellow);
+  font-size: 1.05rem;
+}
+
+.date {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.message-body {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Alertas */
+.alert {
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.alert.success {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+.alert.error {
+  background: transparent;
+  border: 2px solid var(--danger);
+  color: var(--danger);
+}
+
+/* Pistas y estado vacío */
+.hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px 0;
+}
+
+/* Pie */
+.site-footer {
+  border-top: 2px solid var(--yellow);
+  margin-top: 40px;
+  padding-top: 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}

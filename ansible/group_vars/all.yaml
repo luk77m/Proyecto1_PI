@@ -9,8 +9,8 @@ paquetes_comunes:
 
 db_name: guestbook
 db_user: guestbook
-db_password: "CambiaEsto_123"
+db_password: "303946"
 
-app_repo: josedom24/guestbook_php
+app_repo: luk77m/guestbook_php
 app_branch: main
 app_raw_url: "https://raw.githubusercontent.com/{{ app_repo }}/{{ app_branch }}"
