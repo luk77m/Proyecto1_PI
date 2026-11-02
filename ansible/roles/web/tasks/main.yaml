@@ -1,0 +1,9 @@
+- name: Instalar Apache, PHP y el cliente de MariaDB
+  ansible.builtin.apt:
+    name:
+      - apache2
+      - libapache2-mod-php
+      - php
+      - php-mysql
+      - mariadb-client
+    state: present
