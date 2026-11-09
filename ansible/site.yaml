@@ -16,3 +16,9 @@
   become: true
   roles:
     - web
+
+- name: Servidor NAS
+  hosts: servidores_nas
+  become: true
+  roles:
+    - nas

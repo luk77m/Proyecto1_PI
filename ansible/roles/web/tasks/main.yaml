@@ -10,20 +10,20 @@
     state: present
   notify: Recargar Apache
 
-- name: Descargar y descomprimir la aplicación
-  ansible.builtin.unarchive:
-    src: "{{ app_tarball }}"
-    dest: /var/www
-    remote_src: true
-    creates: "{{ app_dir }}/schema.sql"
+#- name: Descargar y descomprimir la aplicación
+#  ansible.builtin.unarchive:
+#    src: "{{ app_tarball }}"
+#    dest: /var/www
+#    remote_src: true
+#    creates: "{{ app_dir }}/schema.sql"
 
-- name: Generar config.php con los datos de conexión
-  ansible.builtin.template:
-    src: config.php.j2
-    dest: "{{ app_dir }}/config.php"
-    owner: root
-    group: www-data
-    mode: "0640"
+#- name: Generar config.php con los datos de conexión
+#  ansible.builtin.template:
+#    src: config.php.j2
+#    dest: "{{ app_dir }}/config.php"
+#    owner: root
+#    group: www-data
+#    mode: "0640"
 
 - name: Configurar el virtual host
   ansible.builtin.template:

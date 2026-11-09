@@ -1,6 +1,10 @@
 # IP de la red de datos: vienen del inventario que genera OpenTofu
 ip_web_datos: "{{ hostvars[groups['servidores_web'][0]]['ip_datos'] }}"
 ip_bd_datos: "{{ hostvars[groups['servidores_bd'][0]]['ip_datos'] }}"
+ip_nas_datos: "{{ hostvars[groups['servidores_nas'][0]]['ip_datos'] }}"
+red_datos: "10.10.10.0/24"
+nfs_dir: "/srv/nfs/guestbook_php-main"
+app_tarball: "https://github.com/{{ app_repo }}/archive/refs/heads/{{ app_branch }}.tar.gz"
 
 paquetes_comunes:
   - vim

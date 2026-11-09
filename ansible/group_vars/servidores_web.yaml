@@ -1,4 +1,3 @@
 dominio: www.lucamatonte.org
-app_tarball: "https://github.com/{{ app_repo }}/archive/refs/heads/{{ app_branch }}.tar.gz"
 app_dir: "/var/www/guestbook_php-{{ app_branch }}"
 

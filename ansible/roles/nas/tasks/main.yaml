@@ -1,0 +1,38 @@
+- name: Instalar el servidor NFS
+  ansible.builtin.apt:
+    name: nfs-kernel-server
+    state: present
+
+- name: Crear el directorio base de las exportaciones
+  ansible.builtin.file:
+    path: /srv/nfs
+    state: directory
+    mode: "0755"
+
+- name: Descargar y descomprimir la aplicación en el NAS
+  ansible.builtin.unarchive:
+    src: "{{ app_tarball }}"
+    dest: /srv/nfs
+    remote_src: true
+    creates: "{{ nfs_dir }}/schema.sql"
+
+- name: Generar config.php con los datos de conexión
+  ansible.builtin.template:
+    src: config.php.j2
+    dest: "{{ nfs_dir }}/config.php"
+    owner: root
+    group: www-data
+    mode: "0640"
+
+- name: Exportar la aplicación solo a la red de datos (solo lectura)
+  ansible.builtin.lineinfile:
+    path: /etc/exports
+    regexp: '^{{ nfs_dir }}'
+    line: "{{ nfs_dir }} {{ red_datos }}(ro,sync,no_subtree_check)"
+  notify: Reexportar NFS
+
+- name: Servidor NFS arrancado y habilitado
+  ansible.builtin.service:
+    name: nfs-kernel-server
+    state: started
+    enabled: true
