@@ -7,23 +7,22 @@
       - php-mysql
       - php-mbstring
       - mariadb-client
+      - nfs-common
     state: present
   notify: Recargar Apache
 
-#- name: Descargar y descomprimir la aplicación
-#  ansible.builtin.unarchive:
-#    src: "{{ app_tarball }}"
-#    dest: /var/www
-#    remote_src: true
-#    creates: "{{ app_dir }}/schema.sql"
+- name: Crear el punto de montaje de la aplicación
+  ansible.builtin.file:
+    path: "{{ app_dir }}"
+    state: directory
 
-#- name: Generar config.php con los datos de conexión
-#  ansible.builtin.template:
-#    src: config.php.j2
-#    dest: "{{ app_dir }}/config.php"
-#    owner: root
-#    group: www-data
-#    mode: "0640"
+- name: Montar la aplicación desde el NAS por NFS
+  ansible.posix.mount:
+    path: "{{ app_dir }}"
+    src: "{{ ip_nas_datos }}:{{ nfs_dir }}"
+    fstype: nfs
+    opts: ro,_netdev
+    state: mounted
 
 - name: Configurar el virtual host
   ansible.builtin.template:
