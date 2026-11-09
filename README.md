@@ -16,6 +16,9 @@ Autor: Luca Matonte Antúnez · Proyecto Intermodular · 2º ASIR · IES Gonzalo
 - **p1-bd** (Ubuntu 26.04): servidor de base de datos con MariaDB, que escucha solo en la red de datos.
   - ens3: red NAT, IP por DHCP.
   - ens4: red de datos, `10.10.10.20`.
+- **p1-nas** (Debian 13): servidor NFS que guarda los ficheros de la aplicación y su `config.php`, y los exporta en solo lectura a la red de datos.
+  - ens3: red NAT, IP por DHCP.
+  - ens4: red de datos, `10.10.10.30`.
 
 ### Redes
 
@@ -23,6 +26,7 @@ Autor: Luca Matonte Antúnez · Proyecto Intermodular · 2º ASIR · IES Gonzalo
 - **p1-datos**: red muy aislada, sin IP en el anfitrión, por la que web y bd se comunican.
 
 El usuario de la base de datos solo puede conectarse desde `10.10.10.10`.
+Los ficheros de la aplicación viven en el NAS: `web` los monta por NFS (solo lectura) en `/var/www/guestbook_php-main`, así que se puede recrear `web` sin volver a descargar la aplicación.
 
 ## Requisitos
 
@@ -67,8 +71,9 @@ opentofu/
 ├── provider.tf          # providers libvirt y local
 ├── variables.tf         # imágenes, memoria, red e IP de datos
 ├── network.tf           # red NAT y red de datos
-├── cloudinit.tf         # discos cloud-init de cada máquina
-├── main.tf              # volúmenes y máquinas
+├── cloudinit.tf         # discos cloud-init de web y bd
+├── main.tf              # volúmenes y máquinas web y bd
+├── nas.tf               # volumen, cloud-init y máquina del NAS
 ├── output.tf            # IP de las máquinas
 ├── inventario.tf        # genera ../ansible/hosts
 ├── inventario.tftpl
@@ -80,7 +85,9 @@ ansible/
 └── roles/
     ├── commons/         # actualiza el sistema y paquetes comunes
     ├── bd/              # MariaDB, base de datos, usuario y tablas
-    └── web/             # Apache, PHP, mod_rewrite, aplicación y virtual host
+    ├── nas/             # servidor NFS: descarga la aplicación y la exporta
+    └── web/             # Apache, PHP, mod_rewrite, montaje NFS y virtual host
+
 ```
 
 ## Idempotencia
