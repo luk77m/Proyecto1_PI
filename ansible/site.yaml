@@ -11,14 +11,15 @@
   roles:
     - bd
 
+- name: Servidor NAS
+  hosts: servidores_nas
+  become: true
+  roles:
+    - nas
+
 - name: Servidor web
   hosts: servidores_web
   become: true
   roles:
     - web
 
-- name: Servidor NAS
-  hosts: servidores_nas
-  become: true
-  roles:
-    - nas
