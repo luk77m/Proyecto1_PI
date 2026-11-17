@@ -1,14 +1,38 @@
-- name: Instalar Apache, PHP y el cliente de MariaDB
+- name: Instalar Apache, el cliente de MariaDB y el cliente NFS
   ansible.builtin.apt:
     name:
       - apache2
-      - libapache2-mod-php
-      - php
-      - php-mysql
-      - php-mbstring
       - mariadb-client
       - nfs-common
     state: present
+
+- name: Quitar PHP del servidor web (ahora lo ejecuta la máquina php)
+  ansible.builtin.apt:
+    name:
+      - "libapache2-mod-php*"
+      - php
+      - php-mysql
+      - php-mbstring
+    state: absent
+    autoremove: true
+
+- name: Cambiar el MPM de Apache a event (mod_php obligaba a usar prefork)
+  community.general.apache2_module:
+    name: "{{ item.modulo }}"
+    state: "{{ item.estado }}"
+    ignore_configcheck: true
+  loop:
+    - { modulo: mpm_prefork, estado: absent }
+    - { modulo: mpm_event, estado: present }
+  notify: Reiniciar Apache
+
+- name: Habilitar los módulos de proxy hacia PHP-FPM
+  community.general.apache2_module:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - proxy
+    - proxy_fcgi
   notify: Recargar Apache
 
 - name: Crear el punto de montaje de la aplicación

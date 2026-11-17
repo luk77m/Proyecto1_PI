@@ -7,6 +7,11 @@
         AllowOverride All
     </Directory>
 
+    # Apache no ejecuta los .php: los reenvía a PHP-FPM en la máquina php
+    <FilesMatch "\.php$">
+        SetHandler "proxy:fcgi://{{ ip_php_datos }}:9000"
+    </FilesMatch>
+
     ErrorLog ${APACHE_LOG_DIR}/guestbook_error.log
     CustomLog ${APACHE_LOG_DIR}/guestbook_access.log combined
 </VirtualHost>
