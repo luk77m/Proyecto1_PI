@@ -57,3 +57,13 @@
     target: /root/schema.sql
     login_unix_socket: /run/mysqld/mysqld.sock
   when: tablas.query_result[0][0].n | int == 0
+
+- name: Crear el usuario para la IP de php (la que ejecuta el PHP)
+  community.mysql.mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    host: "{{ ip_php_datos }}"
+    priv: "{{ db_name }}.*:ALL"
+    state: present
+    column_case_sensitive: true
+    login_unix_socket: /run/mysqld/mysqld.sock
