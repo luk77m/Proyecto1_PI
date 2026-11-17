@@ -24,16 +24,6 @@
     state: present
     login_unix_socket: /run/mysqld/mysqld.sock
 
-- name: Crear el usuario (solo desde web por la red de datos)
-  community.mysql.mysql_user:
-    name: "{{ db_user }}"
-    password: "{{ db_password }}"
-    host: "{{ ip_web_datos }}"
-    priv: "{{ db_name }}.*:ALL"
-    state: present
-    column_case_sensitive: true
-    login_unix_socket: /run/mysqld/mysqld.sock
-
 - name: Descargar schema.sql de la aplicación
   ansible.builtin.get_url:
     url: "{{ app_raw_url }}/schema.sql"
@@ -65,5 +55,13 @@
     host: "{{ ip_php_datos }}"
     priv: "{{ db_name }}.*:ALL"
     state: present
+    column_case_sensitive: true
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: Eliminar el usuario antiguo, que estaba permitido desde web
+  community.mysql.mysql_user:
+    name: "{{ db_user }}"
+    host: "{{ ip_web_datos }}"
+    state: absent
     column_case_sensitive: true
     login_unix_socket: /run/mysqld/mysqld.sock
