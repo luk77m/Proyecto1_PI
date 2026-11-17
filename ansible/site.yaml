@@ -17,6 +17,12 @@
   roles:
     - nas
 
+- name: Servidor PHP-FPM
+  hosts: servidores_php
+  become: true
+  roles:
+    - php
+
 - name: Servidor web
   hosts: servidores_web
   become: true

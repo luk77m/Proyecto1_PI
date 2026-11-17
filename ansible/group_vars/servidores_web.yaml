@@ -1,3 +1,2 @@
 dominio: www.lucamatonte.org
-app_dir: "/var/www/guestbook_php-{{ app_branch }}"
 

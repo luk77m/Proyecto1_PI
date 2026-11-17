@@ -1,0 +1,42 @@
+- name: Instalar PHP-FPM, sus extensiones y los clientes NFS y MariaDB
+  ansible.builtin.apt:
+    name:
+      - php-fpm
+      - php-mysql
+      - php-mbstring
+      - nfs-common
+      - mariadb-client
+    state: present
+
+- name: Crear el punto de montaje de la aplicación
+  ansible.builtin.file:
+    path: "{{ app_dir }}"
+    state: directory
+
+- name: Montar la aplicación desde el NAS por NFS
+  ansible.posix.mount:
+    path: "{{ app_dir }}"
+    src: "{{ ip_nas_datos }}:{{ nfs_dir }}"
+    fstype: nfs
+    opts: ro,_netdev
+    state: mounted
+
+- name: PHP-FPM escucha en la red de datos
+  ansible.builtin.lineinfile:
+    path: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
+    regexp: '^listen ='
+    line: "listen = {{ ip_php_datos }}:9000"
+  notify: Reiniciar PHP-FPM
+
+- name: PHP-FPM solo acepta peticiones del servidor web
+  ansible.builtin.lineinfile:
+    path: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
+    regexp: '^;?listen\.allowed_clients'
+    line: "listen.allowed_clients = {{ ip_web_datos }}"
+  notify: Reiniciar PHP-FPM
+
+- name: PHP-FPM arrancado y habilitado
+  ansible.builtin.service:
+    name: "php{{ php_version }}-fpm"
+    state: started
+    enabled: true
