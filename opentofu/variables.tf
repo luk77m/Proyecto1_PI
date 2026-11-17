@@ -10,3 +10,6 @@ variable "ip_datos_bd"       { default = "10.10.10.20" }
 variable "imagen_nas"        { default = "debian13-base.qcow2" }
 variable "memoria_nas"       { default = 512 }
 variable "ip_datos_nas"      { default = "10.10.10.30" }
+variable "imagen_php"   { default = "debian13-base.qcow2" }
+variable "memoria_php"  { default = 512 }
+variable "ip_datos_php" { default = "10.10.10.40" }
