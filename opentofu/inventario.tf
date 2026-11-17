@@ -7,6 +7,8 @@ resource "local_file" "inventario" {
     ip_datos_web = var.ip_datos_web
     ip_datos_bd  = var.ip_datos_bd
     ip_nas       = try(libvirt_domain.nas.network_interface[0].addresses[0], "")
-    ip_datos_nas = var.ip_datos_nas 
+    ip_datos_nas = var.ip_datos_nas
+    ip_php       = try(libvirt_domain.php.network_interface[0].addresses[0], "")
+    ip_datos_php = var.ip_datos_php 
   })
 }

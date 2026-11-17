@@ -12,5 +12,9 @@ output "maquinas" {
       nat   = try(libvirt_domain.nas.network_interface[0].addresses[0], "No disponible")
       datos = var.ip_datos_nas
     }
+    php = {
+      nat   = try(libvirt_domain.php.network_interface[0].addresses[0], "No disponible")
+      datos = var.ip_datos_php
+    }
   }
 }
