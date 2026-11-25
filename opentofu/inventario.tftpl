@@ -1,5 +1,6 @@
 [servidores_web]
 web ansible_host=${ip_web} ansible_user=debian ip_datos=${ip_datos_web}
+web2 ansible_host=${ip_web2} ansible_user=debian ip_datos=${ip_datos_web2}
 
 [servidores_bd]
 bd ansible_host=${ip_bd} ansible_user=ubuntu ip_datos=${ip_datos_bd}
@@ -9,3 +10,6 @@ nas ansible_host=${ip_nas} ansible_user=debian ip_datos=${ip_datos_nas}
 
 [servidores_php]
 php ansible_host=${ip_php} ansible_user=debian ip_datos=${ip_datos_php}
+
+[servidores_lb]
+lb ansible_host=${ip_lb} ansible_user=debian ip_datos=${ip_datos_lb}
