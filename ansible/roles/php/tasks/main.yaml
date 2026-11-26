@@ -32,7 +32,7 @@
   ansible.builtin.lineinfile:
     path: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
     regexp: '^;?listen\.allowed_clients'
-    line: "listen.allowed_clients = {{ ip_web_datos }}"
+    line: "listen.allowed_clients = {{ ips_web_datos }}"
   notify: Reiniciar PHP-FPM
 
 - name: PHP-FPM arrancado y habilitado

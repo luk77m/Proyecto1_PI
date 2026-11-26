@@ -21,3 +21,5 @@ app_raw_url: "https://raw.githubusercontent.com/{{ app_repo }}/{{ app_branch }}"
 
 ip_php_datos: "{{ hostvars[groups['servidores_php'][0]]['ip_datos'] }}"
 app_dir: "/var/www/guestbook_php-{{ app_branch }}"
+
+ips_web_datos: "{{ groups['servidores_web'] | map('extract', hostvars, 'ip_datos') | join(',') }}"
