@@ -48,6 +48,12 @@
     opts: ro,_netdev
     state: mounted
 
+- name: Habilitar mod_headers (cabecera X-Servidor)
+  community.general.apache2_module:
+    name: headers
+    state: present
+  notify: Recargar Apache
+
 - name: Configurar el virtual host
   ansible.builtin.template:
     src: vhost.conf.j2
@@ -78,3 +84,4 @@
     name: rewrite
     state: present
   notify: Recargar Apache
+

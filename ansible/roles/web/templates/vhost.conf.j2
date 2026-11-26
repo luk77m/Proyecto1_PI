@@ -12,6 +12,9 @@
         SetHandler "proxy:fcgi://{{ ip_php_datos }}:9000"
     </FilesMatch>
 
+    # Identifica qué servidor web atiende la petición (sirve para probar el balanceo)
+    Header always set X-Servidor "{{ inventory_hostname }}"
+
     ErrorLog ${APACHE_LOG_DIR}/guestbook_error.log
     CustomLog ${APACHE_LOG_DIR}/guestbook_access.log combined
 </VirtualHost>
