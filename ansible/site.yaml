@@ -29,3 +29,8 @@
   roles:
     - web
 
+- name: Balanceador HAProxy
+  hosts: servidores_lb
+  become: true
+  roles:
+    - haproxy
