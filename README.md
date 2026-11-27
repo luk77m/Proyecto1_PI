@@ -10,10 +10,16 @@ Autor: Luca Matonte Antúnez · Proyecto Intermodular · 2º ASIR · IES Gonzalo
 
 ### Máquinas
 
-- **p1-web** (Debian 13): servidor web con Apache y PHP, virtual host `www.lucamatonte.org`. No ejecuta PHP: reenvía los `.php` a la máquina `php` con `proxy_fcgi`.
+- **p1-lb** (Debian 13): balanceador de carga con HAProxy. Es el punto de entrada: reparte las peticiones entre `web` y `web2` (`roundrobin`) y comprueba que cada una responde.
+  - ens3: red NAT, IP por DHCP. `www.lucamatonte.org` apunta a esta IP.
+  - ens4: red de datos, `10.10.10.50`.
+- **p1-web** (Debian 13): servidor web con Apache. No ejecuta PHP: reenvía los `.php` a la máquina `php` con `proxy_fcgi`. Añade la cabecera `X-Servidor` a las respuestas.
   - ens3: red NAT, IP por DHCP.
   - ens4: red de datos, `10.10.10.10`.
-- **p1-php** (Debian 13): servidor PHP-FPM que ejecuta el PHP de la aplicación. Escucha en `10.10.10.40:9000` y solo acepta peticiones de `web`. Monta la aplicación del NAS por NFS en la misma ruta que `web`.
+- **p1-web2** (Debian 13): segundo servidor web, con exactamente la misma configuración que `web` (mismo rol de Ansible).
+  - ens3: red NAT, IP por DHCP.
+  - ens4: red de datos, `10.10.10.11`.
+- **p1-php** (Debian 13): servidor PHP-FPM que ejecuta el PHP de la aplicación. Escucha en `10.10.10.40:9000` y solo acepta peticiones de `web` y `web2`.
   - ens3: red NAT, IP por DHCP.
   - ens4: red de datos, `10.10.10.40`.
 - **p1-bd** (Ubuntu 26.04): servidor de base de datos con MariaDB, que escucha solo en la red de datos.
@@ -25,18 +31,22 @@ Autor: Luca Matonte Antúnez · Proyecto Intermodular · 2º ASIR · IES Gonzalo
 
 ### Redes
 
-- **p1-nat** (`192.168.150.0/24`): red NAT con DHCP. Desde ella se accede al servidor web y las máquinas salen a internet.
-- **p1-datos**: red muy aislada, sin IP en el anfitrión, por la que web y bd se comunican.
+- **p1-nat** (`192.168.150.0/24`): red NAT con DHCP. Desde ella se accede al balanceador y las máquinas salen a internet para actualizarse.
+- **p1-datos**: red muy aislada, sin IP en el anfitrión, por la que se comunican todas las máquinas del escenario.
 
-El usuario de la base de datos solo puede conectarse desde `10.10.10.40`, que es la máquina que ejecuta el PHP. El servidor web ya no puede conectarse a MariaDB.
-Los ficheros de la aplicación viven en el NAS: `web` y `php` los montan por NFS (solo lectura) en `/var/www/guestbook_php-main`, así que se pueden recrear sin volver a descargar la aplicación.
+### Cómo se comunican
+
+Navegador → `lb` (HAProxy) → `web` / `web2` (Apache) → `php` (PHP-FPM) → `bd` (MariaDB).
+
+- El usuario de la base de datos solo puede conectarse desde `10.10.10.40`, que es la máquina que ejecuta el PHP. Los servidores web no pueden conectarse a MariaDB.
+- Los ficheros de la aplicación viven en el NAS: `web`, `web2` y `php` los montan por NFS (solo lectura) en `/var/www/guestbook_php-main`, así que se pueden recrear sin volver a descargar la aplicación.
 
 ## Requisitos
 
 - OpenTofu y libvirt (`qemu:///system`).
-- Ansible con las colecciones `community.mysql` y `community.general`
+- Ansible con las colecciones `community.mysql`, `community.general` y `ansible.posix`
   (incluidas en el paquete `ansible` completo; si no:
-  `ansible-galaxy collection install community.mysql community.general`).
+  `ansible-galaxy collection install community.mysql community.general ansible.posix`).
 - Imágenes cloud en el pool `default` de libvirt:
   - `debian13-base.qcow2` (Debian 13)
   - `ubuntu2604-base.qcow2` (Ubuntu 26.04)
@@ -57,19 +67,25 @@ ansible-playbook site.yaml
 
 OpenTofu genera el inventario `ansible/hosts` con las IP de las máquinas.
 
-Para acceder a la aplicación, añade a `/etc/hosts` la IP NAT de web (se ve con `tofu output`):
+Para acceder a la aplicación, añade a `/etc/hosts` la IP NAT de `lb` (se ve con `tofu output`):
 
 ```
-<IP_NAT_web> www.lucamatonte.org
+<IP_NAT_lb> www.lucamatonte.org
 ```
 
 Y abre `http://www.lucamatonte.org`.
 
 Para eliminar el escenario: `tofu destroy` en `opentofu/`.
 
+## Pruebas
+
+El fichero [`PRUEBAS.md`](PRUEBAS.md) contiene las comprobaciones de las tres
+modificaciones (NAS con NFS, PHP-FPM en otra máquina y dos servidores web con HAProxy).
+
 ## Estructura
 
 ```
+PRUEBAS.md               # informe de pruebas de las tres modificaciones
 opentofu/
 ├── provider.tf          # providers libvirt y local
 ├── variables.tf         # imágenes, memoria, red e IP de datos
@@ -78,6 +94,8 @@ opentofu/
 ├── main.tf              # volúmenes y máquinas web y bd
 ├── nas.tf               # volumen, cloud-init y máquina del NAS
 ├── php.tf               # volumen, cloud-init y máquina de PHP-FPM
+├── web2.tf              # volumen, cloud-init y máquina del segundo servidor web
+├── lb.tf                # volumen, cloud-init y máquina del balanceador
 ├── output.tf            # IP de las máquinas
 ├── inventario.tf        # genera ../ansible/hosts
 ├── inventario.tftpl
@@ -88,7 +106,8 @@ ansible/
 ├── group_vars/          # variables (BD, aplicación, dominio)
 └── roles/
     ├── commons/         # actualiza el sistema y paquetes comunes
-    ├── bd/              # MariaDB, base de datos, usuario y tablas
+    ├── bd/              # MariaDB, base de datos y usuario
+    ├── haproxy/         # HAProxy: reparte entre los servidores del grupo servidores_web
     ├── nas/             # servidor NFS: descarga la aplicación y la exporta
     ├── php/             # PHP-FPM en la red de datos con la aplicación por NFS
     └── web/             # Apache, proxy_fcgi hacia PHP-FPM, montaje NFS y virtual host
@@ -102,3 +121,4 @@ Una segunda ejecución de `ansible-playbook site.yaml` termina con `changed=0`:
 - La aplicación solo se descarga si no está ya descomprimida.
 - Los servicios solo se reinician mediante handlers cuando cambia su configuración.
 - El usuario antiguo de la base de datos (el de la IP de `web`) se elimina con una tarea, porque `mysql_user` no borra los usuarios de otras IP.
+- El balanceador genera su lista de servidores a partir del inventario, así que añadir un servidor web en OpenTofu lo incluye solo.
