@@ -24,3 +24,9 @@ backend webs
 {% for h in groups['servidores_web'] %}
     server {{ h }} {{ hostvars[h].ip_datos }}:80 check inter 2s fall 2 rise 2
 {% endfor %}
+
+listen estadisticas
+    bind *:8404
+    stats enable
+    stats uri /stats
+    stats refresh 5s
